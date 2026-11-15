@@ -4,18 +4,22 @@ const os = require('os');
 const PORT = 3000;
 
 const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-
-  const respuesta = {
-    empresa: 'Distribuciones Mediterráneo S.L.',
-    autor: 'Jesús Barru Petrule',
-    mensaje: 'API REST operativa desde contenedor Docker con Node.js',
-    contenedor: os.hostname(),
-    version_node: process.version,
-    fecha: new Date().toISOString()
-  };
-
-  res.end(JSON.stringify(respuesta, null, 2));
+  if (req.url === '/') {
+    res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Bienvenido a la API de Distribuciones Mediterráneo S.L. - Desarrollado por Jesús\n');
+  } else if (req.url === '/estado') {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    const estado = {
+      servicio: 'api_node - Distribuciones Mediterráneo S.L.',
+      hostname: os.hostname(),
+      uptime_segundos: Math.round(process.uptime()),
+      fecha: new Date().toISOString()
+    };
+    res.end(JSON.stringify(estado, null, 2));
+  } else {
+    res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ error: 'Ruta no encontrada' }));
+  }
 });
 
 server.listen(PORT, () => {
